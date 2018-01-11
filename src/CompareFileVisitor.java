@@ -11,12 +11,13 @@ public class CompareFileVisitor extends SimpleFileVisitor<Path>
 {
 HashMap<Long, Vector<FileComparator> > indexFiles;
 HashMap<String, Vector<File> > duplicateFiles;
+long minFileLength = 0;
 
 public FileVisitResult visitFile(Path file, BasicFileAttributes attrs)
 throws IOException
 {
         File f = file.toFile();
-        if (f.canRead()) {
+        if (f.canRead() && f.length() >= minFileLength) {
                 Vector<FileComparator> fcs = indexFiles.get(f.length());
                 if (fcs != null) {
                         for (FileComparator fc : fcs) {

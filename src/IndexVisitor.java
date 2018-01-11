@@ -10,12 +10,13 @@ import java.util.Vector;
 public class IndexVisitor extends SimpleFileVisitor<Path>
 {
 HashMap<Long, Vector<FileComparator> > indexFiles;
+long minFileLength = 0;
 
 public FileVisitResult visitFile(Path file, BasicFileAttributes attrs)
 throws IOException
 {
         File f = file.toFile();
-        if (f.canRead()) {
+        if (f.canRead() && f.length() >= minFileLength) {
                 Vector<FileComparator> v;
                 if(indexFiles.containsKey(f.length())) {
                         v = indexFiles.get(f.length());

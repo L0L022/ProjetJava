@@ -8,6 +8,7 @@ import java.util.Vector;
 public class FindDuplicateFiles
 {
 Vector<Vector<File> > duplicateFiles;
+long minFileLength = 0;
 
 public void find(Path dir) throws IOException
 {
@@ -16,6 +17,7 @@ public void find(Path dir) throws IOException
 
         IndexVisitor indexVisitor = new IndexVisitor();
         indexVisitor.indexFiles = indexFiles;
+        indexVisitor.minFileLength = minFileLength;
         Files.walkFileTree(dir, indexVisitor);
 
         for (Vector<FileComparator> fileComparators : indexFiles.values()) {
@@ -53,11 +55,13 @@ public void find(Path dir1, Path dir2) throws IOException
 
         IndexVisitor indexVisitor = new IndexVisitor();
         indexVisitor.indexFiles = indexFiles;
+        indexVisitor.minFileLength = minFileLength;
         Files.walkFileTree(dir1, indexVisitor);
 
         CompareFileVisitor compareFileVisitor = new CompareFileVisitor();
         compareFileVisitor.duplicateFiles = new HashMap<String, Vector<File> >();;
         compareFileVisitor.indexFiles = indexFiles;
+        compareFileVisitor.minFileLength = minFileLength;
         Files.walkFileTree(dir2, compareFileVisitor);
         this.duplicateFiles = new Vector<Vector<File> >(compareFileVisitor.duplicateFiles.values());
 }

@@ -9,6 +9,8 @@ public class Application
 public static void main (String [] args) throws IOException
 {
         FindDuplicateFiles fdf = new FindDuplicateFiles();
+        fdf.minFileLength = 1000; // 1ko
+        fdf.regexFileName = ".*svg"; // only svg files
 
         Path d1 = Paths.get(args[0]);
 

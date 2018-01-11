@@ -2,6 +2,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.io.File;
 import java.io.IOException;
+import java.util.Vector;
 
 public class Application
 {
@@ -18,8 +19,11 @@ public static void main (String [] args) throws IOException
                 fdf.find(d1);
         }
 
-        for (FilesPair f : fdf.duplicateFiles) {
-                System.out.println(f.first.toString() + " same as " + f.second.toString());
+        for (Vector<File> files : fdf.duplicateFiles) {
+                for (File f : files) {
+                        System.out.print(f.toString() + " ; ");
+                }
+                System.out.println();
         }
 }
 }

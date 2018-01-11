@@ -10,7 +10,7 @@ import java.util.Vector;
 public class CompareFileVisitor extends SimpleFileVisitor<Path>
 {
 HashMap<Long, Vector<FileComparator> > indexFiles;
-Vector<FilesPair> duplicateFiles;
+HashMap<String, Vector<File> > duplicateFiles;
 
 public FileVisitResult visitFile(Path file, BasicFileAttributes attrs)
 throws IOException
@@ -21,7 +21,24 @@ throws IOException
                 if (fcs != null) {
                         for (FileComparator fc : fcs) {
                                 if (fc.equals(new FileComparator(f))) {
-                                        duplicateFiles.addElement(new FilesPair(f, fc._file));
+                                        File f1 = fc._file;
+                                        File f2 = f;
+                                        if (!f1.toPath().equals(f2.toPath())) {
+                                                String key = fc.digest();
+                                                Vector<File> v;
+                                                if(duplicateFiles.containsKey(key)) {
+                                                        v = duplicateFiles.get(key);
+                                                } else {
+                                                        v = new Vector<File>();
+                                                        duplicateFiles.put(key, v);
+                                                }
+                                                if (!v.contains(f1)) {
+                                                        v.addElement(f1);
+                                                }
+                                                if (!v.contains(f2)) {
+                                                        v.addElement(f2);
+                                                }
+                                        }
                                 }
                         }
                 }

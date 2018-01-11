@@ -7,12 +7,12 @@ import java.util.Vector;
 
 public class FindDuplicateFiles
 {
-Vector<FilesPair> duplicateFiles;
+Vector<Vector<File> > duplicateFiles;
 
 public void find(Path dir) throws IOException
 {
-        duplicateFiles = new Vector<FilesPair>();
         HashMap<Long, Vector<FileComparator> > indexFiles = new HashMap<Long, Vector<FileComparator> >();
+        HashMap<String, Vector<File> > duplicateFiles = new HashMap<String, Vector<File> >();
 
         IndexVisitor indexVisitor = new IndexVisitor();
         indexVisitor.indexFiles = indexFiles;
@@ -25,17 +25,30 @@ public void find(Path dir) throws IOException
                                 File f2 = fileComparators.elementAt(j)._file;
                                 if (!f1.toPath().equals(f2.toPath())) {
                                         if (fileComparators.elementAt(i).equals(fileComparators.elementAt(j))) {
-                                                duplicateFiles.addElement(new FilesPair(f1, f2));
+                                                String key = fileComparators.elementAt(i).digest();
+                                                Vector<File> v;
+                                                if(duplicateFiles.containsKey(key)) {
+                                                        v = duplicateFiles.get(key);
+                                                } else {
+                                                        v = new Vector<File>();
+                                                        duplicateFiles.put(key, v);
+                                                }
+                                                if (!v.contains(f1)) {
+                                                        v.addElement(f1);
+                                                }
+                                                if (!v.contains(f2)) {
+                                                        v.addElement(f2);
+                                                }
                                         }
                                 }
                         }
                 }
         }
+        this.duplicateFiles = new Vector<Vector<File> >(duplicateFiles.values());
 }
 
 public void find(Path dir1, Path dir2) throws IOException
 {
-        duplicateFiles = new Vector<FilesPair>();
         HashMap<Long, Vector<FileComparator> > indexFiles = new HashMap<Long, Vector<FileComparator> >();
 
         IndexVisitor indexVisitor = new IndexVisitor();
@@ -43,8 +56,9 @@ public void find(Path dir1, Path dir2) throws IOException
         Files.walkFileTree(dir1, indexVisitor);
 
         CompareFileVisitor compareFileVisitor = new CompareFileVisitor();
-        compareFileVisitor.duplicateFiles = duplicateFiles;
+        compareFileVisitor.duplicateFiles = new HashMap<String, Vector<File> >();;
         compareFileVisitor.indexFiles = indexFiles;
         Files.walkFileTree(dir2, compareFileVisitor);
+        this.duplicateFiles = new Vector<Vector<File> >(compareFileVisitor.duplicateFiles.values());
 }
 }
